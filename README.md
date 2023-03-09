@@ -1,6 +1,6 @@
-# Proyecto aun sin nombre!
+# Cauldron Cuisine
 
-## El mejor amigo de quien no sabe cocinar (A non cook best friend).
+## Magical meals made simple
 
 Este proyecto se trata de una página web para encontrar recetas con ingredientes que ya tenes.
 
@@ -8,7 +8,7 @@ Este proyecto se trata de una página web para encontrar recetas con ingrediente
 
 - Un buscador que filtra las recetas de acuerdo a los ingredientes ingresados.
 - Login para que usuarios puedan crear nuevas recetas y editar sus recetas ya existentes.
-- Filtros mas personalizados (por ej.: solo recetas veganas, gluten-free, etc).
+- Filtros personalizados (por ej.: solo recetas veganas, gluten-free, etc).
 
 ### Product Backlog:
 
