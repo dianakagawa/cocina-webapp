@@ -13,7 +13,7 @@ module.exports = {
         .status(201)
         .cookie("userToken", userToken, {
           httpOnly: true,
-          expires: new Date(Date.now()),
+          expires: new Date(Date.now() + 900000),
         })
         .json({successMessage: "user registered", user: newUser});
     } catch (error) {
@@ -44,7 +44,7 @@ module.exports = {
           .status(201)
           .cookie("userToken", userToken, {
             httpOnly: true,
-            expires: new Date(Date.now()),
+            expires: new Date(Date.now() + 900000),
           })
           .json({});
         console.log("the user is logged in");
@@ -57,8 +57,19 @@ module.exports = {
 
   // check if the user is logged in
   isLoggedIn: async (req, res) => {
-    // console.log("is logged", req.cookies);
-    res.json({message: "ok", active: true});
+    try {
+      const token = req.cookies.userToken;
+      // console.log("token", token);
+      if (!token) {
+        return res.json({message: "not logged in", active: false});
+      } else {
+        // console.log("is logged", req.cookies);
+        res.json({message: "ok", active: true});
+      }
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({message: "Internal server error"});
+    }
   },
 
   // logout

@@ -89,4 +89,16 @@ module.exports = {
       .then((deleteConfirmation) => res.json(deleteConfirmation))
       .catch((err) => res.json(err));
   },
+
+  // Search for recipes
+  searchRecipes: (req, res) => {
+    Recipe.find({
+      $text: {$search: req.params.searchTerm},
+    })
+      .then((searchResults) => res.json(searchResults))
+      .catch((err) => {
+        console.error(err);
+        return res.status(500).json({message: "Internal server error"});
+      });
+  },
 };
