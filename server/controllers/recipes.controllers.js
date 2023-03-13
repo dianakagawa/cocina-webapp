@@ -36,14 +36,14 @@ module.exports = {
 
   // Get one recipe
   getOneRecipe: (req, res) => {
-    Recipe.findOne({_id: req.params.id})
+    Recipe.findOne({_id: req.params.recipeId})
       .then((oneRecipe) => res.json(oneRecipe))
       .catch((err) => res.json(err));
   },
 
   // Update a recipe
   updateRecipe: (req, res) => {
-    Recipe.findOneAndUpdate({_id: req.params.id}, req.body, {
+    Recipe.findOneAndUpdate({_id: req.params.recipeId}, req.body, {
       new: true,
       runValidators: true,
     })
@@ -53,8 +53,12 @@ module.exports = {
 
   // Delete a recipe
   deleteRecipe: (req, res) => {
-    Recipe.deleteOne({_id: req.params.id})
-      .then((deleteConfirmation) => res.json(deleteConfirmation))
+    // console.log(req.params.recipeId);
+    Recipe.deleteOne({_id: req.params.recipeId})
+      .then((deleteConfirmation) => {
+        res.json(deleteConfirmation);
+        // console.log("recipe deleted weee");
+      })
       .catch((err) => res.json(err));
   },
 
@@ -64,7 +68,7 @@ module.exports = {
       const searchTerm = req.params.searchTerm;
       const recipes = await Recipe.find();
       const results = matchSorter(recipes, searchTerm, {
-        keys: ["title", "tags"],
+        keys: ["title", "tags", "importantIngredients.name"],
       });
       res.json(results);
     } catch (err) {

@@ -30,6 +30,27 @@ const RecipeSchema = new mongoose.Schema({
   },
   tags: {
     type: [String],
+    enum: [
+      "breakfast",
+      "lunch",
+      "dinner",
+      "dessert",
+      "appetizer",
+      "snack",
+      "drink",
+      "sauce",
+      "side dish",
+      "soup",
+      "salad",
+      "vegan",
+      "vegetarian",
+      "gluten free",
+      "dairy free",
+      "paleo",
+      "keto",
+      "whole30",
+      "low carb",
+    ],
   },
 });
 
