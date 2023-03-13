@@ -1,8 +1,8 @@
 import React, {useState} from "react";
-import axios from "axios";
 import {useNavigate} from "react-router-dom";
-import {Label, TextInput, Button} from "flowbite-react";
+import {Label, TextInput, Button, Toast} from "flowbite-react";
 import logo from "../assets/logo.png";
+import {HiExclamation} from "react-icons/hi";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -13,19 +13,33 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const user = {email, password};
-    axios
-      .post("http://localhost:8000/api/login", user, {
-        withCredentials: true,
-      })
-      .then((res) => {
-        console.log(res);
-        navigate("/");
-      })
-      .catch((err) => {
-        console.log(err.response.data);
-        setErrors(err.response.data.errors);
-      });
+    // const user = {email, password};
+    // axios
+    //   .post("http://localhost:8000/api/login", user, {
+    //     withCredentials: true,
+    //   })
+    //   .then((res) => {
+    //     console.log(res);
+    const validationErrors = {};
+    if (!email) {
+      validationErrors.email = {message: "Email is required"};
+    }
+    if (!password) {
+      validationErrors.password = {message: "Password is required"};
+    }
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+    setErrors({});
+    setTimeout(() => {
+      navigate(`/`);
+    }, 2000); // wait for 2 seconds before navigating to the main page
+    //   })
+    //   .catch((err) => {
+    //     console.log(err.response.data);
+    //     setErrors(err.response.data.errors);
+    //   });
   };
 
   return (
@@ -48,7 +62,18 @@ const Login = () => {
               required={true}
               onChange={(e) => setEmail(e.target.value)}
             />
-            {errors.email ? <p>{errors.email.message}</p> : ""}
+            {errors.email ? (
+              <div className="space-x-4 divide-x divide-gray-200 dark:divide-gray-700">
+                <Toast>
+                  <HiExclamation className="h-5 w-5" />
+                  <div className="pl-4 text-sm font-normal">
+                    {errors.email.message}
+                  </div>
+                </Toast>
+              </div>
+            ) : (
+              ""
+            )}
           </div>
           <div className="text-1xl pb-2 pt-2">
             <div className="mb-1 block">
@@ -60,12 +85,19 @@ const Login = () => {
               required={true}
               onChange={(e) => setPassword(e.target.value)}
             />
-            {errors.password ? <p>{errors.password.message}</p> : ""}
+            {errors.password ? (
+              <div className="space-x-4 divide-x divide-gray-200 dark:divide-gray-700">
+                <Toast>
+                  <HiExclamation className="h-5 w-5" />
+                  <div className="pl-4 text-sm font-normal">
+                    {errors.password.message}
+                  </div>
+                </Toast>
+              </div>
+            ) : (
+              ""
+            )}
           </div>
-          {/* <div className="flex items-center gap-2">
-          <Checkbox id="remember" />
-          <Label htmlFor="remember">Remember me</Label>
-        </div> */}
           <Button
             color="success"
             className="mx-auto w-3/4 font-semibold pt-4"

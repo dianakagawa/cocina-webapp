@@ -1,47 +1,30 @@
 const Recipe = require("../models/recipes.model");
-const upload = require("../config/multer.config");
 
 module.exports = {
   // Create a new recipe
   createRecipe: (req, res) => {
     const {
       title,
-      description,
-      cookTime,
-      prepTime,
       servings,
+      cookTime,
       importantIngredients,
       secondaryIngredients,
       steps,
       tags,
+      image,
     } = req.body;
-
-    // use multer to upload the image
-    upload.single("image")(req, res, function (err) {
-      if (err) {
-        return res.status(400).json({message: err.message});
-      }
-
-      Recipe.create({
-        title,
-        description,
-        cookTime,
-        prepTime,
-        servings,
-        importantIngredients,
-        secondaryIngredients,
-        steps,
-        tags,
-        // save the image name in the database
-        image: req.file.filename,
-        _user: req.params.id,
-      })
-        .then((newRecipe) => res.json(newRecipe))
-        .catch((err) => {
-          console.log(err);
-          res.status(500).json({message: "Something went wrong", error: err});
-        });
-    });
+    Recipe.create({
+      title,
+      servings,
+      cookTime,
+      importantIngredients,
+      secondaryIngredients,
+      steps,
+      tags,
+      image,
+    })
+      .then((newRecipe) => res.json(newRecipe))
+      .catch((err) => res.status(400).json(err));
   },
 
   // Get all recipes
@@ -60,27 +43,12 @@ module.exports = {
 
   // Update a recipe
   updateRecipe: (req, res) => {
-    // if there is a new image uploaded, update the recipe with the new image
-    if (req.file) {
-      Recipe.findOneAndUpdate(
-        {_id: req.params.id},
-        // update the image filename
-        {...req.body, image: req.file.filename},
-        {new: true, runValidators: true}
-      )
-        .then((updatedRecipe) => res.json(updatedRecipe))
-        .catch((err) => res.status(400).json(err));
-    } else {
-      // if no new image was uploaded, update the recipe without changing the image
-      Recipe.findOneAndUpdate(
-        {_id: req.params.id},
-        // don't update the image
-        req.body,
-        {new: true, runValidators: true}
-      )
-        .then((updatedRecipe) => res.json(updatedRecipe))
-        .catch((err) => res.status(400).json(err));
-    }
+    Recipe.findOneAndUpdate({_id: req.params.id}, req.body, {
+      new: true,
+      runValidators: true,
+    })
+      .then((updatedRecipe) => res.json(updatedRecipe))
+      .catch((err) => res.status(400).json(err));
   },
 
   // Delete a recipe
@@ -91,14 +59,17 @@ module.exports = {
   },
 
   // Search for recipes
-  searchRecipes: (req, res) => {
-    Recipe.find({
-      $text: {$search: req.params.searchTerm},
-    })
-      .then((searchResults) => res.json(searchResults))
-      .catch((err) => {
-        console.error(err);
-        return res.status(500).json({message: "Internal server error"});
+  searchRecipes: async (req, res) => {
+    try {
+      const searchTerm = req.params.searchTerm;
+      const recipes = await Recipe.find();
+      const results = matchSorter(recipes, searchTerm, {
+        keys: ["title", "tags"],
       });
+      res.json(results);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json;
+    }
   },
 };
